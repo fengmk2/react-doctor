@@ -1,12 +1,29 @@
 packages:
   - "packages/*"
 
-minimumReleaseAge: 7200
+minimumReleaseAge: 60
 trustPolicy: no-downgrade
-blockExoticSubdeps: true
+blockExoticSubdeps: false
 minimumReleaseAgeExclude:
   - deslop-js
+  - vite-plus
+  - vite
+  - vitest
+  - "@voidzero-dev/*"
+  - "@oxc-project/*"
+  - "@oxlint/*"
+  - oxlint
+  - oxfmt
+  - oxlint-tsgolint
+
+onlyBuiltDependencies:
+  - "@parcel/watcher"
+  - "@sentry/cli"
+  - esbuild
+  - unrs-resolver
 
 overrides:
-  vite: npm:@voidzero-dev/vite-plus-core@^0.1.15
-  vitest: npm:@voidzero-dev/vite-plus-test@^0.1.15
+  vite: https://pkg.pr.new/voidzero-dev/vite-plus/@voidzero-dev/vite-plus-core@1738
+  vitest: https://pkg.pr.new/voidzero-dev/vite-plus/@voidzero-dev/vite-plus-test@1738
+  oxlint: ^1.66.0
+  oxlint-tsgolint: ^0.23.0
