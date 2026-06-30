@@ -2,9 +2,36 @@ packages:
   - "packages/*"
 
 minimumReleaseAge: 7200
-trustPolicy: no-downgrade
+# trustPolicy: no-downgrade
 blockExoticSubdeps: true
 
 overrides:
-  vite: npm:@voidzero-dev/vite-plus-core@^0.1.15
-  vitest: npm:@voidzero-dev/vite-plus-test@^0.1.15
+  vite: "catalog:"
+  vitest: "catalog:"
+onlyBuiltDependencies:
+  - "@parcel/watcher"
+  - "@sentry/cli"
+  - esbuild
+  - unrs-resolver
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@0.0.0-commit.4be8d5190ff1283cef27bcb957cf313891fd1269
+  vitest: 4.1.9
+  vite-plus: 0.0.0-commit.4be8d5190ff1283cef27bcb957cf313891fd1269
+peerDependencyRules:
+  allowAny:
+    - vite
+    - vitest
+  allowedVersions:
+    vite: "*"
+    vitest: "*"
+minimumReleaseAgeExclude:
+  - vite-plus
+  - "@voidzero-dev/*"
+  - oxlint
+  - "@oxlint/*"
+  - oxlint-tsgolint
+  - "@oxlint-tsgolint/*"
+  - oxfmt
+  - "@oxfmt/*"
+  - vitest
+  - "@vitest/*"
