@@ -157,7 +157,7 @@ const MutableInDepsComponent = ({ token }: { token: string }) => {
   void token;
   useEffect(() => {
     document.title = location.pathname;
-  }, [location.pathname]);
+  }, []);
   return <div />;
 };
 
