@@ -275,6 +275,25 @@ describe("buildRunEventAttributes", () => {
     ).toBeUndefined();
   });
 
+  it("records the security-scan fail-open outcome and drops it when absent", () => {
+    // Same contract as `supplyChain.overlapTimedOut`: `true` only when the
+    // forked pass failed open to no diagnostics; omitted fields (pre-field
+    // cached payloads / the failure path) are dropped, not coerced.
+    expect(
+      buildRunEventAttributes(baseInput({ result: buildResult(), securityScanFailed: true }))[
+        "securityScan.failed"
+      ],
+    ).toBe(true);
+    expect(
+      buildRunEventAttributes(baseInput({ result: buildResult(), securityScanFailed: false }))[
+        "securityScan.failed"
+      ],
+    ).toBe(false);
+    expect(
+      buildRunEventAttributes(baseInput({ result: buildResult() }))["securityScan.failed"],
+    ).toBeUndefined();
+  });
+
   it("emits the baseline delta on a computed baseline run", () => {
     const result = buildResult({
       diagnostics: [buildDiagnostic(), buildDiagnostic({ filePath: "src/B.tsx" })],
@@ -327,6 +346,27 @@ describe("buildRunEventAttributes", () => {
     // Not passed -> null -> dropped, never coerced to a misleading "null".
     const withoutDrops = buildRunEventAttributes(baseInput({ result: buildResult() }));
     expect(withoutDrops["lint.droppedFileCount"]).toBeUndefined();
+  });
+
+  it("rolls suppressed findings up by source and drops the dims when tallies are absent", () => {
+    const attributes = buildRunEventAttributes(
+      baseInput({
+        result: buildResult(),
+        suppressedRuleCounts: [
+          { rule: "react-doctor/no-danger", source: "config", count: 3 },
+          { rule: "react-doctor/jsx-key", source: "inline", count: 2 },
+          { rule: "react-doctor/alt-text", source: "inline", count: 1 },
+        ],
+      }),
+    );
+    expect(attributes["diag.suppressed"]).toBe(6);
+    expect(attributes["diag.suppressedConfig"]).toBe(3);
+    expect(attributes["diag.suppressedOverride"]).toBe(0);
+    expect(attributes["diag.suppressedInline"]).toBe(3);
+
+    // Absent tallies (e.g. the failure path) read as "unknown", not zero.
+    const withoutTallies = buildRunEventAttributes(baseInput({ result: buildResult() }));
+    expect(withoutTallies["diag.suppressed"]).toBeUndefined();
   });
 
   it("captures config shape and drops null/undefined-valued attributes", () => {
